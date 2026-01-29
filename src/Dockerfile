@@ -22,7 +22,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create .env file from secret mount (for python-dotenv)
-# The secret is mounted during build and not stored in image layers
+# NOTE: The .env file is written to the image filesystem for runtime use.
+# While BuildKit secrets prevent exposure during build, the file is accessible
+# in the final image. For production, consider runtime secret injection instead.
 RUN --mount=type=secret,id=env_content \
     if [ ! -f /run/secrets/env_content ]; then \
         echo "ERROR: env_content secret not provided" >&2; \

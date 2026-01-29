@@ -8,6 +8,15 @@ on:
       - '.github/workflows/deploy-to-acr.yml'
   workflow_dispatch:
 
+# Ensure only one deployment runs at a time
+concurrency:
+  group: deploy-acr-${{ github.ref }}
+  cancel-in-progress: true
+
+# Explicitly define minimum required permissions
+permissions:
+  contents: read
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -37,6 +46,7 @@ jobs:
             ${{ secrets.ACR_LOGIN_SERVER }}/techworkshop-app:latest
           secrets: |
             env_content=${{ secrets.ENV }}
+          # Cache configuration: buildcache image is created on first run
           cache-from: |
             type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/techworkshop-app:buildcache
           cache-to: |
