@@ -8,7 +8,7 @@ from azure.core.exceptions import AzureError
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 load_dotenv()
-
+#testtask
 # Cosmos DB configuration (replace previous search env vars)
 COSMOS_ENDPOINT = os.environ.get("COSMOS_ENDPOINT")
 COSMOS_KEY = os.environ.get("COSMOS_KEY")
