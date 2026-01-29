@@ -3,6 +3,9 @@ name: Deploy to Azure Container Registry
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'src/**'
+      - '.github/workflows/deploy-to-acr.yml'
   workflow_dispatch:
 
 jobs:
@@ -32,5 +35,9 @@ jobs:
           tags: |
             ${{ secrets.ACR_LOGIN_SERVER }}/techworkshop-app:${{ github.sha }}
             ${{ secrets.ACR_LOGIN_SERVER }}/techworkshop-app:latest
-          build-args: |
-            ENV_CONTENT=${{ secrets.ENV }}
+          secrets: |
+            env_content=${{ secrets.ENV }}
+          cache-from: |
+            type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/techworkshop-app:buildcache
+          cache-to: |
+            type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/techworkshop-app:buildcache,mode=max
