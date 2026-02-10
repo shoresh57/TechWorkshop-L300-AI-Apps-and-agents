@@ -21,8 +21,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the code
 COPY . .
 
-# Copy .env file into the image (for python-dotenv)
-COPY .env .env
+# Create .env file from secret mount (for python-dotenv)
+# NOTE: The .env file is written to the image filesystem for runtime use.
+# While BuildKit secrets prevent exposure during build, the file is accessible
+# in the final image. For production, consider runtime secret injection instead.
+RUN --mount=type=secret,id=env_content \
+    if [ ! -f /run/secrets/env_content ]; then \
+        echo "ERROR: env_content secret not provided" >&2; \
+        exit 1; \
+    fi && \
+    cat /run/secrets/env_content > .env
 
 # Expose the port (default FastAPI/uvicorn port)
 EXPOSE 8000
